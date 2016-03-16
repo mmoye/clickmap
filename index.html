@@ -14,7 +14,7 @@
       var maxExtent;
       require([
         "esri/map", "esri/geometry/webMercatorUtils", "dojo/dom",
-        "dojo/domReady!"
+        "dojo/domReady!", "esri/symbols/SimpleMarkerSymbol"
       ], function(
         Map, webMercatorUtils, dom
       ) {
@@ -31,7 +31,7 @@
         dojo.connect(map, 'onExtentChange', checkMapBounds);
       });
         function checkMapBounds(extent, delta, levelChange, lod){
-          console.log(maxExtent);
+          //console.log(maxExtent);
           if(extent.intersects(maxExtent)){
             previousExtent = extent;
           } else {
@@ -40,8 +40,18 @@
             }
           }
           return true;
-        }
+        };
+        var pin;
+        var markerSymbol = new SimpleMarkerSymbol().setSize(10).setColor(new Color([#E50000));
 
+        function addGraphic(evt){
+          map.graphics.add(new Graphic(markerSymbol));
+          pin = true;
+        };
+        function removeGraphic(evt){
+          map.graphics.clear();
+          pin = false;
+        }
         function showCoordinates(evt) {
           //the map is in web mercator but display coordinates in geographic (lat, long)
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
