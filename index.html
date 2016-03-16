@@ -22,13 +22,25 @@
           basemap: "streets",
           center: [-121.874, 37.229],
           zoom: 10
-        });
+                  });
         map.on("load", function() {
           //after map loads, connect to listen to mouse move & drag events
           maxExtent = map.extent;
           map.on("click", showCoordinates);
           //map.on("mouse-drag", showCoordinates);
-        });
+        dojo.connect(map, 'onExtentChange', checkMapBounds);
+      });
+        function checkMapBounds(extent, delta, levelChange, lod){
+          console.log(maxExtent);
+          if(extent.intersects(maxExtent)){
+            previousExtent = extent;
+          } else {
+            if(previousExtent != null){
+              map.setExtent(previousExtent);
+            }
+          }
+          return true;
+        }
 
         function showCoordinates(evt) {
           //the map is in web mercator but display coordinates in geographic (lat, long)
@@ -43,8 +55,8 @@
   </head>
   <body>
     <form>
-      <input name="x" value="x_long"/>
-      <input name = "y" value="y_lat"/>
+      <input id="x_long" name="x" value="x_long"/>
+      <input id="y_lat" name = "y" value="y_lat"/>
     <div id="map" style="position:relative; width:900px; height:600px; border:1px solid #000;">
       <span id="info" style="position:absolute; left:15px; bottom:5px; color:#000; z-index:50;"></span>
     </div>
