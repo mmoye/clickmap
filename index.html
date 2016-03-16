@@ -13,10 +13,13 @@
       var extent;
       var maxExtent;
       require([
-        "esri/map", "esri/geometry/webMercatorUtils", "dojo/dom",
-        "dojo/domReady!", "esri/symbols/SimpleMarkerSymbol"
+        "esri/map",
+        "esri/geometry/webMercatorUtils",
+        "esri/symbols/SimpleMarkerSymbol",
+        "dojo/dom", "esri/Color", "esri/graphic",
+        "dojo/domReady!",
       ], function(
-        Map, webMercatorUtils, dom
+        Map, webMercatorUtils, SimpleMarkerSymbol, dom, Color, Graphic
       ) {
         map = new Map("map", {
           basemap: "streets",
@@ -42,21 +45,29 @@
           return true;
         };
         var pin;
-        var markerSymbol = new SimpleMarkerSymbol().setSize(10).setColor(new Color([#E50000));
+        var markerSymbol = new SimpleMarkerSymbol().setSize(10).setColor(new Color('#E50000'));
 
         function addGraphic(evt){
-          map.graphics.add(new Graphic(markerSymbol));
+          map.graphics.add(new Graphic(evt.mapPoint, markerSymbol));
           pin = true;
-        };
-        function removeGraphic(evt){
+        }
+
+        function removeGraphic(){
           map.graphics.clear();
           pin = false;
         }
+
         function showCoordinates(evt) {
+          if (pin) {
+            removeGraphic(evt);
+            addGraphic(evt);
+          }else{
+            addGraphic(evt);
+          }
           //the map is in web mercator but display coordinates in geographic (lat, long)
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
           //display mouse coordinates
-          dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
+          //dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
           dom.byId("x_long").value = mp.x.toFixed(3);
           dom.byId("y_lat").value = mp.y.toFixed(3);
         }
